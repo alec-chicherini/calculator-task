@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Exec=/opt/calculator-task/bin/./calculator-task
+Icon=calculator-task
+Name=calculator-task
+Categories=Utility;
