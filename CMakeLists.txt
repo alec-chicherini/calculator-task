@@ -18,8 +18,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core)
 
 set(SOURCE_FILES__
     main.cxx
-    widget_calculator.cxx
-    widget_calculator.h
+    WidgetCalculator.cxx
+    WidgetCalculator.h
 )
 
 

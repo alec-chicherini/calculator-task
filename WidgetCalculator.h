@@ -2,6 +2,10 @@
 #include <QFlags>
 #include <QObject>
 #include <QWidget>
+#include <QLineEdit>
+#include <QKeyEvent>
+#include <QPushButton>
+#include <QColor>
 
 class WidgetCalculator : public QWidget {
   Q_OBJECT
@@ -11,12 +15,10 @@ class WidgetCalculator : public QWidget {
 
   enum ButtonFeature {
     kColorWhite = 0b1,
-    kColorGray = 0b01,
-    kColorNone = 0b001,
-    kBold = 0b0001,
-    kEmpty = 0b00001,
-    kNumber = 0b000001,
-    kOperator = 0b0000001
+    kColorGray =  0b10,
+    kColorNone =  0b100,
+    kBold =       0b1000,
+    kEmpty =      0b10000
   };
   Q_DECLARE_FLAGS(ButtonFeatures, ButtonFeature);
 

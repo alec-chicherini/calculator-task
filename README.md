@@ -8,7 +8,7 @@ git clone https://github.com/alec-chicherini/calculator-task.git
 cd calculator-task
 docker build --target=qt_from_repo . -t calculator-task-build
 idTempContainer=$(docker create calculator-task-build)
-docker cp "$idTempContainer":/result/*.deb .
+docker cp "$idTempContainer":/result/ .
 docker rm "$idTempContainer"
 ```
 
