@@ -20,13 +20,14 @@ set(SOURCE_FILES__
     main.cxx
     WidgetCalculator.cxx
     WidgetCalculator.h
+    IntXHelper.h
 )
 
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES__})
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets)
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/intx/include/ )
 # Qt
 
 # CPack

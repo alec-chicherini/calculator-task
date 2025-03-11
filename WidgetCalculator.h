@@ -33,5 +33,8 @@ class WidgetCalculator : public QWidget {
 
  private:
   QLineEdit* line_edit;
+  QString buffer_value;
+  QString buffer_operation;
+  QString previous_pressed_btn;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(WidgetCalculator::ButtonFeatures);

@@ -5,13 +5,7 @@
 #include <QGridLayout>
 #include <QRegExpValidator>
 
-const QString kPlus("+");
-const QString kMinus("-");
-const QString kMultiply("×");
-const QString kDivision("÷");
-const QString kEqual("=");
-const QString kDot(",");
-const QString kDelete("<-");
+#include <IntXHelper.h>
 
 WidgetCalculator::WidgetCalculator() {
   [[maybe_unused]] bool connected;
@@ -104,7 +98,8 @@ WidgetCalculator::WidgetCalculator() {
   add_calc_btn(kMinus, 3, 5, WidgetCalculator::kColorGray);
 
   /// 4 buttons row
-  add_calc_btn("", 4, 0, WidgetCalculator::kEmpty);
+  add_calc_btn(kSign, 4, 0,
+               WidgetCalculator::kColorGray | WidgetCalculator::kBold);
   add_calc_btn("", 4, 1, WidgetCalculator::kEmpty);
   add_calc_btn("0", 4, 2,
                WidgetCalculator::kColorWhite | WidgetCalculator::kBold);
@@ -119,20 +114,70 @@ WidgetCalculator::WidgetCalculator() {
 };
 
 void WidgetCalculator::ProcessKeyPressed(const QString& str_btn) {
- // qDebug() << "WidgetCalculator::ProcessKeyPressed " << str_btn;
+  // qDebug() << "WidgetCalculator::ProcessKeyPressed " << str_btn;
 
-  if (str_btn == kPlus ||
-      ((str_btn == kMinus) && (line_edit->text().size() != 0)) ||
-      str_btn == kMultiply || str_btn == kDivision || str_btn == kEqual) {
-    qDebug() << "operation will be here";
+  auto is_operation = [](const QString& btn_value) {
+    if (btn_value == kPlus || btn_value == kMultiply ||
+        btn_value == kDivision || btn_value == kEqual || btn_value == kMinus)
+      return true;
+    else
+      return false;
+  };
+
+  if (str_btn == kSign) {
+    QString string_number(line_edit->text());
+    if (string_number.isEmpty() == false) {
+      if (string_number[0] == kMinus) {
+        string_number.remove(kMinus);
+        line_edit->setText(string_number);
+      }else{
+        string_number.prepend(kMinus);
+        line_edit->setText(string_number);
+      }
+    }
+  }
+  else if (is_operation(str_btn)) {
+    IntX result;
+    IntX rhs = IntXFromString(line_edit->text());
+    if (buffer_value.size() != 0) {
+      IntX lhs = IntXFromString(buffer_value);
+
+      if (buffer_operation == kEqual) {
+        result = rhs;
+      } else if (buffer_operation == kPlus) {
+        result = lhs + rhs;
+      } else if (buffer_operation == kMinus) {
+        result = lhs - rhs;
+      } else if (buffer_operation == kMultiply) {
+        result = lhs * rhs;
+      } else if (buffer_operation == kDivision) {
+          result = lhs / rhs;
+      }
+    } else {
+      result = rhs;
+    }
+
+    buffer_value = IntXToString(result);
+    if (buffer_value.size() != 0) {
+      line_edit->setText(buffer_value);
+    }
+
+    buffer_operation = str_btn;
+
+    qDebug() << "buffer_value = " << buffer_value;
+    qDebug() << "buffer_operation = " << buffer_operation;
+
   } else if (str_btn == kDelete) {
     QString current_string(line_edit->text());
     current_string.remove(current_string.size() - 1, 1);
     line_edit->setText(current_string);
   } else if (line_edit->text().size() == 0 &&
-             (str_btn == kMinus || str_btn == kDot)) {
+             (str_btn == kDot)) {
     line_edit->setText(str_btn);
   } else {
+    if (is_operation(previous_pressed_btn)) {
+      line_edit->setText("");
+    }
     QString possible_string(line_edit->text());
     possible_string.append(str_btn);
     QRegExp rx("[-]?([0-9A-F]{1,24}([,][0-9A-F]{0,8})?|[,][0-9A-F]{0,8})");
@@ -142,11 +187,11 @@ void WidgetCalculator::ProcessKeyPressed(const QString& str_btn) {
 
     if (result == QValidator::Acceptable) line_edit->setText(possible_string);
   }
+  previous_pressed_btn = str_btn;
 }
 
 void WidgetCalculator::keyPressEvent(QKeyEvent* event) {
   quint32 code = event->nativeScanCode();
-  // qDebug() << "WidgetCalculator::keyPressEvent " << code;
   QString btn_pressed_keyboard;
   if (code == 22) {
     btn_pressed_keyboard = "<-";

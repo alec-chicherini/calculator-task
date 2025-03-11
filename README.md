@@ -6,6 +6,8 @@
 ```bash
 git clone https://github.com/alec-chicherini/calculator-task.git
 cd calculator-task
+git submodule init
+git submodule update
 docker build --target=qt_from_repo . -t calculator-task-build
 idTempContainer=$(docker create calculator-task-build)
 docker cp "$idTempContainer":/result/ .
