@@ -27,14 +27,24 @@ void ShowMessageBoxOutOfRange() {
 
 IntX operator+(const IntX& lhs, const IntX& rhs) noexcept {
   IntX result;
+  auto is_more_than_96 = [&] {
+    intx::uint128 result_without_decimal = result.value >> result.after_dot;
+    intx::uint128 max96{0xFFFFFFFFFFFFFFFF, 0xFFFFFFFF};
+    if (result_without_decimal > max96) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   auto chek_if_more_than_128 = [&] {
-    if (result.value < lhs.value) {
+    if ((result.value < lhs.value) || is_more_than_96()) {
       result.value = intx::uint128{0};
       result.is_negative = false;
       result.after_dot = 0;
       ShowMessageBoxOutOfRange();
     }
   };
+
   if (lhs.is_negative && rhs.is_negative) {
     result.value = lhs.value + rhs.value;
     result.is_negative = true;
@@ -101,10 +111,37 @@ IntX operator*(const IntX& lhs, const IntX& rhs) noexcept {
   return result;
 }
 
-IntX operator/(const IntX& lhs, const IntX& rhs) noexcept {
+IntX operator/(const IntX& lhs_, const IntX& rhs_) noexcept {
   IntX result;
-  if (rhs.value != intx::uint128{0}) {
-    result.value = lhs.value / rhs.value;
+  if (rhs_.value != intx::uint128{0}) {
+    if (lhs_.is_negative && rhs_.is_negative) {
+      result.is_negative = false;
+    } else if ((lhs_.is_negative == false) && (rhs_.is_negative == false)) {
+      result.is_negative = false;
+    } else if ((lhs_.is_negative) && (rhs_.is_negative == false)) {
+      result.is_negative = true;
+    } else if ((lhs_.is_negative == false) && (rhs_.is_negative)) {
+      result.is_negative = true;
+    }
+
+    intx::uint128 lhs = lhs_.value;
+    intx::uint128 d = lhs / rhs_.value;
+    result.value = d;
+    int after_dot_was_added = 0;
+    for (int i = 0; i < 8; i++) {
+      lhs = lhs - (rhs_.value * d);
+      if (lhs == intx::uint128{0}) break;
+      lhs = lhs * intx::uint128{10};
+      d = lhs / rhs_.value;
+      result.value *= intx::uint128{10};
+      result.value += d;
+      after_dot_was_added++;
+    }
+
+    result.after_dot = 
+        //rhs_.after_dot - lhs_.after_dot - 
+        after_dot_was_added;
+
   } else {
     QMessageBox msgBox;
     msgBox.setText("Ошибка.Деление на ноль.");
