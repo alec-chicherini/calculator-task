@@ -54,7 +54,7 @@ cd build
 cmake .. 
 	-DCMAKE_PREFIX_PATH="C:/vcpkg/installed/x64-windows/share/Qt6"  
 	-DCMAKE_INSTALL_PREFIX="C:/calculator-task/build/install" 
-	-D=PATH_QT_INSTALLED_DLL="C:/vcpkg/installed/x64-windows/bin/"
+	-DPATH_QT_INSTALLED_DLL="C:/vcpkg/installed/x64-windows/bin/"
 cmake --build . --config Release
 cmake --install .
 ```
