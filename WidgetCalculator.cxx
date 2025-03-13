@@ -3,9 +3,18 @@
 
 #include <QDebug>
 #include <QGridLayout>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QRegExpValidator>
-
+using RegularExpression_T = QRegExp;
+using RegularExpressionValidator_T = QRegExpValidator;
+#else
+#include <QRegularExpressionValidator>
+using RegularExpression_T = QRegularExpression;
+using RegularExpressionValidator_T = QRegularExpressionValidator;
+#endif
 #include <IntXHelper.h>
+
+
 
 WidgetCalculator::WidgetCalculator() {
   [[maybe_unused]] bool connected;
@@ -130,13 +139,12 @@ void WidgetCalculator::ProcessKeyPressed(const QString& str_btn) {
       if (string_number[0] == kMinus) {
         string_number.remove(kMinus);
         line_edit->setText(string_number);
-      }else{
+      } else {
         string_number.prepend(kMinus);
         line_edit->setText(string_number);
       }
     }
-  }
-  else if (is_operation(str_btn)) {
+  } else if (is_operation(str_btn)) {
     IntX result;
     IntX rhs = IntXFromString(line_edit->text());
     if (buffer_value.size() != 0) {
@@ -151,7 +159,7 @@ void WidgetCalculator::ProcessKeyPressed(const QString& str_btn) {
       } else if (buffer_operation == kMultiply) {
         result = lhs * rhs;
       } else if (buffer_operation == kDivision) {
-          result = lhs / rhs;
+        result = lhs / rhs;
       }
     } else {
       result = rhs;
@@ -171,8 +179,7 @@ void WidgetCalculator::ProcessKeyPressed(const QString& str_btn) {
     QString current_string(line_edit->text());
     current_string.remove(current_string.size() - 1, 1);
     line_edit->setText(current_string);
-  } else if (line_edit->text().size() == 0 &&
-             (str_btn == kDot)) {
+  } else if (line_edit->text().size() == 0 && (str_btn == kDot)) {
     line_edit->setText(str_btn);
   } else {
     if (is_operation(previous_pressed_btn)) {
@@ -180,8 +187,9 @@ void WidgetCalculator::ProcessKeyPressed(const QString& str_btn) {
     }
     QString possible_string(line_edit->text());
     possible_string.append(str_btn);
-    QRegExp rx("[-]?([0-9A-F]{1,24}([,][0-9A-F]{0,8})?|[,][0-9A-F]{0,8})");
-    QRegExpValidator validator(rx, this);
+    RegularExpression_T rx(
+        "[-]?([0-9A-F]{1,24}([,][0-9A-F]{0,8})?|[,][0-9A-F]{0,8})");
+    RegularExpressionValidator_T validator(rx, this);
     int pos;
     QValidator::State result = validator.validate(possible_string, pos);
 

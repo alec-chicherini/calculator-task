@@ -3,18 +3,20 @@ cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 #CMake
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_compile_options(
-    -Werror
-    -Wall
-)
+# CPack
+if(CMAKE_HOST_SYSTEM MATCHES Linux)
+    add_compile_options(
+        -Werror
+        -Wall
+    )
+endif()
 
 project(calculator-task)
 
 # Qt
 set(CMAKE_AUTOMOC ON)
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core Gui)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Gui)
 
 set(SOURCE_FILES__
     main.cxx
@@ -23,16 +25,46 @@ set(SOURCE_FILES__
     IntXHelper.h
 )
 
-
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES__})
-target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC 
+Qt${QT_VERSION_MAJOR}::Gui 
+Qt${QT_VERSION_MAJOR}::Widgets 
+Qt${QT_VERSION_MAJOR}::Gui
+)
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/intx/include/ )
 # Qt
 
-# CPack
-if(WINDOWS)
-    #
+# Install
+if(CMAKE_HOST_SYSTEM MATCHES Windows)
+    install(TARGETS ${CMAKE_PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+
+    qt_generate_deploy_app_script(
+    TARGET ${CMAKE_PROJECT_NAME}
+    OUTPUT_SCRIPT deploy_script
+    NO_UNSUPPORTED_PLATFORM_ERROR
+    )
+    install(SCRIPT ${deploy_script})
+
+    set(RUNTIME_DLLS_FROM_QT_INSTALLATION 
+        zlib1.dll
+        pcre2-16.dll 
+        double-conversion.dll 
+        zstd.dll
+        libpng16.dll
+        harfbuzz.dll
+        freetype.dll
+        brotlidec.dll 
+        bz2.dll 
+        brotlicommon.dll
+        )
+    list(TRANSFORM RUNTIME_DLLS_FROM_QT_INSTALLATION PREPEND ${PATH_QT_INSTALLED_DLL})
+    install(FILES ${RUNTIME_DLLS_FROM_QT_INSTALLATION}
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+        PERMISSIONS WORLD_EXECUTE WORLD_READ)
+
 else()#DEBIAN
     set(CMAKE_INSTALL_PREFIX /opt/${CMAKE_PROJECT_NAME})
 
