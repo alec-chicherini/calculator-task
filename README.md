@@ -1,7 +1,7 @@
 # calculator-task
 
-<!--Собрать клиент и deb пакет для linux-->
-## Собрать latest клиент и deb пакет для linux ubuntu
+## Ubuntu 20.04
+### Собрать приложение и deb пакет для linux ubuntu
 Собрать в docker 
 ```bash
 git clone https://github.com/alec-chicherini/calculator-task.git
@@ -14,8 +14,8 @@ docker cp "$idTempContainer":/result/ .
 docker rm "$idTempContainer"
 ```
 
-# Запуск в Linux
-## Подготовить чистую машину для тестов Ubuntu 20.04
+## Запуск в Ubuntu 20.04
+### Подготовить чистую машину для тестов Ubuntu 20.04
 ```
 apt update
 apt install ubuntu-desktop
@@ -25,6 +25,34 @@ apt install xrdp
 dpkg -i calculator-task_25.03_amd64.deb
 apt-get install -f -y
 ```
-## Запустить игру
+## Запустить в Linux
 Пуск - Стандартные - calculator-task
+
+В консоли calculator-task
+
+# Windows 10 Visual Studio 2022
+Установить Qt 6.8 - в Developer powershell VS2022
+```
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg; .\bootstrap-vcpkg.bat
+$env:VCPKG_ROOT = "E:\code\vcpkg"
+$env:PATH = "$env:VCPKG_ROOT;$env:PATH"
+vcpkg install qtbase
+```
+
+Собрать в powershell
+```
+git clone https://github.com/alec-chicherini/calculator-task.git
+cd calculator-task
+git submodule init
+git submodule update
+mkdir build
+cd build
+cmake .. 
+	-DCMAKE_PREFIX_PATH="E:/code/vcpkg/installed/x64-windows/share/Qt6"  
+	-DCMAKE_INSTALL_PREFIX="E:/code/calculator-task/build/install" 
+	-D=PATH_QT_INSTALLED_DLL="E:/code/vcpkg/installed/x64-windows/bin/"
+cmake --build . --config Release
+cmake --install .
+```
  
