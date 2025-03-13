@@ -31,17 +31,20 @@ apt-get install -f -y
 В консоли calculator-task
 
 # Windows 10 Visual Studio 2022
-Установить Qt 6.8 - в Developer powershell VS2022
+## Установить Qt 6.8 - в Developer powershell VS2022
 ```
+cd C:/
 git clone https://github.com/microsoft/vcpkg.git
-cd vcpkg; .\bootstrap-vcpkg.bat
-$env:VCPKG_ROOT = "E:\code\vcpkg"
+cd vcpkg
+.\bootstrap-vcpkg.bat
+$env:VCPKG_ROOT = "C:/vcpkg"
 $env:PATH = "$env:VCPKG_ROOT;$env:PATH"
 vcpkg install qtbase
 ```
 
-Собрать в powershell
+## Собрать в powershell
 ```
+cd C:/
 git clone https://github.com/alec-chicherini/calculator-task.git
 cd calculator-task
 git submodule init
@@ -49,10 +52,15 @@ git submodule update
 mkdir build
 cd build
 cmake .. 
-	-DCMAKE_PREFIX_PATH="E:/code/vcpkg/installed/x64-windows/share/Qt6"  
-	-DCMAKE_INSTALL_PREFIX="E:/code/calculator-task/build/install" 
-	-D=PATH_QT_INSTALLED_DLL="E:/code/vcpkg/installed/x64-windows/bin/"
+	-DCMAKE_PREFIX_PATH="C:/vcpkg/installed/x64-windows/share/Qt6"  
+	-DCMAKE_INSTALL_PREFIX="C:/calculator-task/build/install" 
+	-D=PATH_QT_INSTALLED_DLL="C:/vcpkg/installed/x64-windows/bin/"
 cmake --build . --config Release
 cmake --install .
+```
+
+## Запустить
+```
+C:/calculator-task/build/install/calculator-task.exe
 ```
  
